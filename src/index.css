@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-nexus-black: #050505;
+  --color-nexus-dark: #121212;
+  --color-nexus-gray: #1a1a1a;
+  --color-nexus-cyan: #22d3ee;
+  
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.glass-panel {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Override Chrome Autofill to keep it transparent/dark */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.glass-input {
+  width: 100%; position: relative; z-index: 1; box-sizing: border-box;
+  background: transparent; color: rgba(255,255,255,.96); font-size: 1rem;
+  line-height: 1.5; text-align: center; padding: 1.22rem 1.5rem; border: 0; outline: none;
+}
+.glass-input::placeholder { color: rgba(255,255,255,.52); }
+.glass-input:focus-visible { outline: 2px solid rgba(255,255,255,.72); outline-offset: 4px; border-radius: 1rem; }
+.glass-checkbox { width: 1rem; height: 1rem; accent-color: #b9a37a; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
