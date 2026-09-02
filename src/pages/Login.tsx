@@ -34,13 +34,24 @@ export function Login() {
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setError(''); setMessage(''); setSubmitting(true);
     try {
-      const endpoint = mode === 'login' ? '/api/auth/login' : mode === 'register' ? '/api/auth/register' : mode === 'forgot' ? '/api/auth/forgot-password' : '/api/auth/reset-password';
-      const body = mode === 'forgot' ? { email } : mode === 'reset' ? { token: resetToken, password } : { email, password, phone: mode === 'register' ? phone : undefined, remember };
-      const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.message || 'Não foi possível concluir. Tente novamente.');
-      if (mode === 'forgot') { setMessage(data.message); return; }
-      if (remember && email) localStorage.setItem('meta_account', email); else localStorage.removeItem('meta_account');
+      // MOCK LOGIN FOR VERCEL DEMONSTRATION
+      // Since the Node.js backend doesn't run on Vercel, we simulate a successful login here.
+      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
+      
+      if (mode === 'forgot') { 
+        setMessage('Se a conta existir, as instruções serão enviadas.'); 
+        return; 
+      }
+      
+      if (remember && email) {
+        localStorage.setItem('meta_account', email); 
+      } else {
+        localStorage.removeItem('meta_account');
+      }
+      
+      // We manually store a fake session for AuthContext to pick up
+      localStorage.setItem('meta_session_demo', JSON.stringify({ id: 1, email: email || 'demo@metastrategy.co' }));
+      
       await refresh();
       navigate('/home', { replace: true });
     } catch (cause) {

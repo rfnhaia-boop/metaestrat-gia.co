@@ -10,13 +10,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function refresh() {
     try {
-      const response = await fetch('/api/auth/me', { credentials: 'include' });
-      setUser(response.ok ? (await response.json()).user : null);
+      // MOCK FOR VERCEL DEMONSTRATION
+      const demoSession = localStorage.getItem('meta_session_demo');
+      if (demoSession) {
+        setUser(JSON.parse(demoSession));
+      } else {
+        setUser(null);
+      }
     } finally { setLoading(false); }
   }
 
   async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    // MOCK FOR VERCEL DEMONSTRATION
+    localStorage.removeItem('meta_session_demo');
     setUser(null);
   }
 
