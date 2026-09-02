@@ -76,7 +76,7 @@ export function Login() {
           {mode === 'login' && <div className="w-full flex justify-between items-center mt-4 gap-3">
             <label className="flex items-center gap-2.5 cursor-pointer text-white/70 hover:text-white transition-colors text-sm">
               <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="glass-checkbox" />
-              <span>Lembrar da minha conta</span>
+              <span>Lembrar minha senha</span>
             </label>
             <button type="button" onClick={() => changeMode('forgot')} className="text-white/70 hover:text-white text-sm underline-offset-4 hover:underline">Recuperar senha</button>
           </div>}
