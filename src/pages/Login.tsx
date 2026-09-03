@@ -33,19 +33,22 @@ export function Login() {
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setError(''); setMessage(''); setSubmitting(true);
     try {
-      const endpoint = mode === 'login' ? '/api/auth/login' : mode === 'register' ? '/api/auth/register' : '/api/auth/forgot-password';
-      const body = mode === 'forgot' ? { email } : { email, password, phone: mode === 'register' ? phone : undefined, remember };
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(body),
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.message || 'Não foi possível concluir. Tente novamente.');
-      if (mode === 'forgot') { setMessage(data.message); return; }
+      // MODO DEMONSTRAÇÃO: Aprova qualquer e-mail e senha.
+      await new Promise(resolve => setTimeout(resolve, 600)); // Simula tempo de rede
+      
+      if (mode === 'forgot') { 
+        setMessage('Instruções enviadas para o seu e-mail (modo demonstração).');
+        return; 
+      }
+      
       if (remember && email) localStorage.setItem('meta_account', email);
       else localStorage.removeItem('meta_account');
+      
+      // Armazena um usuário falso para o AuthContext ler
+      localStorage.setItem('meta_session_demo', JSON.stringify({
+        id: 1, email: email, name: 'Usuário Demo'
+      }));
+      
       await refresh();
       navigate('/home', { replace: true });
     } catch (cause) {
