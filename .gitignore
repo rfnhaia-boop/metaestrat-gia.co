@@ -15,6 +15,7 @@ dist-ssr
 server/*.db
 server/*.db-shm
 server/*.db-wal
+data/users.json
 
 # Editor directories and files
 .vscode/*

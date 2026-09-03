@@ -1,8 +1,9 @@
 {
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/home", "destination": "/index.html" },
+    { "source": "/consulting", "destination": "/index.html" },
+    { "source": "/reader", "destination": "/index.html" },
+    { "source": "/intelligence", "destination": "/index.html" }
   ]
 }

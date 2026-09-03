@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 
-type Mode = 'login' | 'register' | 'forgot' | 'reset';
+type Mode = 'login' | 'register' | 'forgot';
 
 export function Login() {
-  const [params] = useSearchParams();
-  const [mode, setMode] = useState<Mode>(params.get('reset') ? 'reset' : 'login');
+  const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState(() => localStorage.getItem('meta_account') || '');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
@@ -19,13 +19,12 @@ export function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, refresh } = useAuth();
-  const resetToken = params.get('reset') || '';
 
   useEffect(() => {
     if (user) navigate((location.state as { from?: string } | null)?.from || '/home', { replace: true });
   }, [user, navigate, location.state]);
 
-  const title = useMemo(() => ({ login: 'Faça seu login', register: 'Crie sua conta', forgot: 'Recupere seu acesso', reset: 'Defina uma nova senha' })[mode], [mode]);
+  const title = useMemo(() => ({ login: 'Faça seu login', register: 'Crie sua conta', forgot: 'Recupere seu acesso' })[mode], [mode]);
 
   function changeMode(next: Mode) {
     setMode(next); setError(''); setMessage(''); setPassword('');
@@ -34,24 +33,19 @@ export function Login() {
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setError(''); setMessage(''); setSubmitting(true);
     try {
-      // MOCK LOGIN FOR VERCEL DEMONSTRATION
-      // Since the Node.js backend doesn't run on Vercel, we simulate a successful login here.
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
-      
-      if (mode === 'forgot') { 
-        setMessage('Se a conta existir, as instruções serão enviadas.'); 
-        return; 
-      }
-      
-      if (remember && email) {
-        localStorage.setItem('meta_account', email); 
-      } else {
-        localStorage.removeItem('meta_account');
-      }
-      
-      // We manually store a fake session for AuthContext to pick up
-      localStorage.setItem('meta_session_demo', JSON.stringify({ id: 1, email: email || 'demo@metastrategy.co' }));
-      
+      const endpoint = mode === 'login' ? '/api/auth/login' : mode === 'register' ? '/api/auth/register' : '/api/auth/forgot-password';
+      const body = mode === 'forgot' ? { email } : { email, password, phone: mode === 'register' ? phone : undefined, remember };
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || 'Não foi possível concluir. Tente novamente.');
+      if (mode === 'forgot') { setMessage(data.message); return; }
+      if (remember && email) localStorage.setItem('meta_account', email);
+      else localStorage.removeItem('meta_account');
       await refresh();
       navigate('/home', { replace: true });
     } catch (cause) {
@@ -63,6 +57,7 @@ export function Login() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[#050505] px-5 py-16">
+      <ThemeToggle className="absolute right-6 top-6 z-30 !bg-white/10 !border-white/15 !text-white/70 hover:!bg-white/15 hover:!text-white" />
       <motion.div className="absolute inset-[-10%] z-0 mix-blend-screen opacity-45" style={{ backgroundImage: 'url(/bg-classic.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }} animate={reduceMotion ? {} : { x: ['-2%', '2%', '-2%'], y: ['-2%', '2%', '-2%'], scale: [1, 1.045, 1] }} transition={{ duration: 40, repeat: Infinity, ease: 'easeInOut' }} />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#050505_100%)] z-0 opacity-80 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/35 via-transparent to-[#050505] z-0 pointer-events-none" />
@@ -77,11 +72,11 @@ export function Login() {
         <form className="w-full flex flex-col items-center" onSubmit={submit}>
           <h2 className="text-white/65 text-xs tracking-[0.22em] uppercase font-medium mb-6">{title}</h2>
           <div className="w-full space-y-5">
-            {mode !== 'reset' && <Field glass={glass}><input type="email" name="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="E-mail" autoComplete="email" required className="glass-input" /></Field>}
+            <Field glass={glass}><input type="email" name="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="E-mail" autoComplete="email" required className="glass-input" /></Field>
             <AnimatePresence initial={false}>
               {mode === 'register' && <Field glass={glass} key="phone"><input type="tel" name="phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Telefone" autoComplete="tel" className="glass-input" /></Field>}
             </AnimatePresence>
-            {(mode === 'login' || mode === 'register' || mode === 'reset') && <Field glass={glass}><input type="password" name="password" value={password} onChange={e => setPassword(e.target.value)} placeholder={mode === 'reset' ? 'Nova senha' : 'Senha'} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} minLength={8} required className="glass-input" /></Field>}
+            {(mode === 'login' || mode === 'register') && <Field glass={glass}><input type="password" name="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Senha" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} minLength={8} required className="glass-input" /></Field>}
           </div>
 
           {mode === 'login' && <div className="w-full flex justify-between items-center mt-4 gap-3">

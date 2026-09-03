@@ -9,8 +9,8 @@ interface EditorialTableOfContentsProps {
 
 export function EditorialTableOfContents({ currentSectionIndex, readSections, onNavigate }: EditorialTableOfContentsProps) {
   return (
-    <div className="w-full min-h-full flex flex-col justify-start p-6 md:p-12 lg:p-24 pt-32">
-      <div className="w-full max-w-7xl mx-auto glass-panel bg-white/70 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 rounded-[2.5rem] p-10 md:p-16 lg:p-20 shadow-[0_0_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] relative overflow-hidden transition-colors duration-500">
+    <div className="w-full min-h-full flex flex-col justify-start p-4 md:p-12 lg:p-24 pt-28 md:pt-32">
+      <div className="w-full max-w-7xl mx-auto glass-panel bg-white/70 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 rounded-[2.5rem] p-6 sm:p-10 md:p-16 lg:p-20 shadow-[0_0_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] relative overflow-hidden transition-colors duration-500">
         {/* Inner glow line */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-gradient-to-r from-transparent via-black/20 dark:via-white/30 to-transparent" />
         

@@ -1,114 +1,100 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { HolographicLight } from '../components/ui/HolographicLight';
+import { useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import { ArrowLeft, Building2, Calculator, Moon, Plus, Scale, Sun, Target, Trash2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../theme/ThemeContext';
+
+type Tool = 'setup' | 'margin' | 'goal' | 'break-even';
+type FixedCost = { id: string; label: string; value: number };
+type BusinessData = { price: number; productCost: number; fees: number; profitGoal: number; workDays: number; fixedCosts: FixedCost[] };
+const initialData: BusinessData = { price: 0, productCost: 0, fees: 0, profitGoal: 0, workDays: 22, fixedCosts: [{ id: 'rent', label: 'Aluguel / espaço', value: 0 }, { id: 'payroll', label: 'Salários e pró-labore', value: 0 }, { id: 'marketing', label: 'Marketing', value: 0 }, { id: 'systems', label: 'Sistemas e assinaturas', value: 0 }] };
+type IconType = ComponentType<{ size?: number; strokeWidth?: number }>;
+const tools: Array<{ id: Tool; name: string; short: string; icon: IconType }> = [
+  { id: 'margin', name: 'Margem & preço', short: 'Descubra quanto sobra em cada venda.', icon: Calculator },
+  { id: 'goal', name: 'Meta de lucro', short: 'Saiba quanto precisa vender para chegar lá.', icon: Target },
+  { id: 'break-even', name: 'Ponto de equilíbrio', short: 'Encontre o mínimo para não ter prejuízo.', icon: Scale },
+];
+const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const number = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 });
+const safe = (value: number) => Number.isFinite(value) && value > 0 ? value : 0;
 
 export function IntelligenceCenter() {
-  const [activeTab, setActiveTab] = useState<'assistant' | 'simulator'>('assistant');
-
-  return (
-    <div className="min-h-screen bg-black text-white p-8 relative flex flex-col md:flex-row gap-8">
-      <HolographicLight color="bg-cyan-500/5" size={600} className="top-1/4 left-1/4" />
-      
-      {/* Sidebar */}
-      <div className="w-full md:w-80 shrink-0 space-y-8 z-10">
-        <div>
-          <button onClick={() => window.location.href='/home'} className="text-white/40 hover:text-white mb-8 block">&larr; Voltar para Home</button>
-          <h1 className="text-3xl font-light mb-2" style={{ fontFamily: 'var(--font-serif)' }}>Inteligência</h1>
-          <p className="text-white/50 text-sm">Ferramentas treinadas com o seu Blueprint Estratégico.</p>
-        </div>
-
-        <div className="space-y-2">
-          <button 
-            onClick={() => setActiveTab('assistant')}
-            className={`w-full text-left px-6 py-4 rounded-xl transition-all ${activeTab === 'assistant' ? 'bg-white/10 text-white shadow-[inset_2px_0_0_#22d3ee]' : 'text-white/40 hover:bg-white/5'}`}
-          >
-            Assistente Contextual
-          </button>
-          <button 
-            onClick={() => setActiveTab('simulator')}
-            className={`w-full text-left px-6 py-4 rounded-xl transition-all ${activeTab === 'simulator' ? 'bg-white/10 text-white shadow-[inset_2px_0_0_#22d3ee]' : 'text-white/40 hover:bg-white/5'}`}
-          >
-            Simulador de Decisões
-          </button>
-        </div>
-      </div>
-
-      {/* Main Area */}
-      <div className="flex-1 glass-panel rounded-3xl relative overflow-hidden flex flex-col z-10 border border-white/5">
-        <div className="p-8 border-b border-white/5">
-          <h2 className="text-xl font-light" style={{ fontFamily: 'var(--font-serif)' }}>
-            {activeTab === 'assistant' ? 'Assistente Contextual' : 'Simulador de Decisões'}
-          </h2>
-        </div>
-
-        <div className="flex-1 p-8 overflow-y-auto">
-          <AnimatePresence mode="wait">
-            {activeTab === 'assistant' && (
-              <motion.div 
-                key="assistant"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-8"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center shrink-0">
-                    <span className="text-cyan-400 font-serif">N</span>
-                  </div>
-                  <div className="bg-white/5 p-6 rounded-2xl rounded-tl-none border border-white/5 max-w-2xl">
-                    <p className="text-white/80 leading-relaxed">Olá. Sou o seu assistente treinado especificamente na estratégia da Lunna Atelier. Como posso ajudar com seu posicionamento hoje?</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 flex-row-reverse">
-                  <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                    <span className="text-white/60 font-serif">LA</span>
-                  </div>
-                  <div className="glass-panel p-6 rounded-2xl rounded-tr-none max-w-2xl">
-                    <p className="text-white/90 leading-relaxed">Quais são as minhas prioridades para os próximos 30 dias de acordo com o plano estratégico?</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab === 'simulator' && (
-              <motion.div 
-                key="simulator"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto"
-              >
-                <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                  <div className="w-4 h-4 bg-cyan-400 rounded-full shadow-[0_0_15px_#22d3ee] animate-pulse" />
-                </div>
-                <h3 className="text-2xl mb-4" style={{ fontFamily: 'var(--font-serif)' }}>Simulador de Cenários</h3>
-                <p className="text-white/50 mb-8 leading-relaxed">Descreva uma situação ou oportunidade comercial. O sistema avaliará se a ação está alinhada ao posicionamento "Presença Feminina Possível".</p>
-                <input 
-                  type="text" 
-                  placeholder="Ex: Fazer uma promoção de 50% no fim de semana..." 
-                  className="w-full bg-transparent border-b border-white/20 text-lg py-4 text-center focus:outline-none focus:border-cyan-400 transition-colors placeholder:text-white/20"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {activeTab === 'assistant' && (
-          <div className="p-6 border-t border-white/5 bg-black/40 backdrop-blur-md">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Pergunte sobre a sua estratégia..." 
-                className="w-full bg-white/5 border border-white/10 rounded-full pl-6 pr-16 py-4 text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
-              />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-cyan-500 text-black rounded-full flex items-center justify-center hover:bg-cyan-400 transition-colors">
-                &uarr;
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+  const [active, setActive] = useState<Tool>('setup');
+  const [data, setData] = useState<BusinessData>(() => { try { return JSON.parse(localStorage.getItem('meta_business_data') || '') || initialData; } catch { return initialData; } });
+  const navigate = useNavigate();
+  useEffect(() => { localStorage.setItem('meta_business_data', JSON.stringify(data)); }, [data]);
+  const update = <K extends keyof BusinessData>(key: K, value: BusinessData[K]) => setData(current => ({ ...current, [key]: value }));
+  const filled = [data.price, data.productCost, data.profitGoal, ...data.fixedCosts.map(cost => cost.value)].filter(value => value > 0).length;
+  const total = 3 + data.fixedCosts.length;
+  return <div className="min-h-screen px-6 py-8 md:px-10 md:py-10 lg:px-14 lg:py-12 text-[#171716] dark:text-white"><div className="max-w-[1440px] mx-auto">
+    <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10"><div>
+      <button onClick={() => navigate('/home')} className="flex items-center gap-2 text-black/45 dark:text-white/45 hover:text-black dark:hover:text-white text-sm mb-7 transition-colors"><ArrowLeft size={15} /> Voltar para início</button>
+      <div className="flex items-center gap-4 mb-4"><span className="w-12 h-px bg-[#a68f63]" /><span className="meta-label !mb-0">Decisão com clareza</span></div>
+      <h1 className="text-5xl md:text-7xl font-light tracking-tight" style={{ fontFamily: 'var(--font-serif)' }}>Ferramentas<br /><span className="text-black/30 dark:text-white/30 italic">de negócio.</span></h1>
+    </div><div className="flex flex-col items-start md:items-end gap-5"><AppearanceSwitch /><p className="max-w-sm text-black/50 dark:text-white/50 leading-relaxed md:text-right">Simulações rápidas para transformar custos, metas e preços em decisões objetivas. Os cálculos são estimativas gerenciais.</p></div></header>
+    <div className="grid md:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[290px_minmax(0,1fr)] gap-6 lg:gap-8 items-start"><nav aria-label="Ferramentas financeiras" className="space-y-3 md:sticky md:top-8"><button onClick={() => setActive('setup')} className={`w-full text-left rounded-2xl border p-5 transition-all ${active === 'setup' ? 'bg-[#a68f63]/10 border-[#a68f63]/30 shadow-[inset_2px_0_0_#a68f63]' : 'border-black/[0.07] dark:border-white/[0.08] bg-white/30 dark:bg-white/[0.03]'}`}><div className="flex gap-4"><span className="w-10 h-10 rounded-full border border-[#a68f63]/35 text-[#8d7852] dark:text-[#c7b182] flex items-center justify-center shrink-0"><Building2 size={17} strokeWidth={1.4} /></span><div><span className="text-[9px] tracking-[.2em] text-[#a68f63]">COMECE AQUI</span><h2 className="font-medium mt-1">Dados do negócio</h2><p className="text-xs text-black/40 dark:text-white/40 mt-1">{filled} de {total} dados preenchidos</p></div></div><div className="h-1 bg-black/[0.06] dark:bg-white/[0.08] rounded-full mt-4 overflow-hidden"><span className="block h-full bg-[#a68f63] transition-all" style={{ width: `${Math.min(100, filled / total * 100)}%` }} /></div></button><div className="pt-3 pb-1 px-2 meta-label">Seus resultados</div>{tools.map((tool, index) => <ToolButton key={tool.id} tool={tool} index={index + 1} active={active === tool.id} onClick={() => setActive(tool.id)} />)}</nav>
+      <section className="min-h-[580px] rounded-[2rem] bg-white/65 dark:!bg-[#151515] border border-black/[0.08] dark:border-white/[0.1] backdrop-blur-3xl shadow-[0_35px_100px_rgba(57,49,34,.08),inset_0_1px_0_white] dark:shadow-[0_35px_100px_rgba(0,0,0,.3)] overflow-hidden"><AnimatePresence mode="wait"><motion.div key={active} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .35 }}>{active === 'setup' ? <BusinessSetup data={data} update={update} onReady={() => setActive('margin')} /> : active === 'margin' ? <MarginTool data={data} /> : active === 'goal' ? <GoalTool data={data} /> : <BreakEvenTool data={data} />}</motion.div></AnimatePresence></section>
     </div>
-  );
+  </div></div>;
 }
+
+function AppearanceSwitch() {
+  const { theme, toggleTheme } = useTheme();
+  return <div className="inline-flex items-center gap-1 rounded-full border border-black/10 dark:border-white/10 bg-white/55 dark:bg-white/[0.06] p-1.5 backdrop-blur-xl" aria-label="Aparência">
+    <button type="button" onClick={theme === 'dark' ? toggleTheme : undefined} className={`flex items-center gap-2 rounded-full px-3 py-2 text-[10px] uppercase tracking-[.14em] transition-all ${theme === 'light' ? 'bg-white text-black shadow-sm' : 'text-white/35 hover:text-white/70'}`}><Sun size={14} strokeWidth={1.5} /> Claro</button>
+    <button type="button" onClick={theme === 'light' ? toggleTheme : undefined} className={`flex items-center gap-2 rounded-full px-3 py-2 text-[10px] uppercase tracking-[.14em] transition-all ${theme === 'dark' ? 'bg-white/12 text-white shadow-sm' : 'text-black/35 hover:text-black/70'}`}><Moon size={14} strokeWidth={1.5} /> Noturno</button>
+  </div>;
+}
+
+function ToolButton({ tool, index, active, onClick }: { tool: typeof tools[number]; index: number; active: boolean; onClick: () => void }) {
+  const Icon = tool.icon;
+  return <button onClick={onClick} className={`w-full text-left rounded-2xl border p-5 transition-all ${active ? 'bg-white/75 dark:bg-white/10 border-black/10 dark:border-white/15 shadow-[inset_2px_0_0_#a68f63,0_15px_45px_rgba(44,39,29,.06)]' : 'border-transparent hover:border-black/[0.07] dark:hover:border-white/[0.08] hover:bg-white/35 dark:hover:bg-white/[0.04]'}`}><div className="flex items-start gap-4"><span className={`w-10 h-10 rounded-full border flex items-center justify-center shrink-0 ${active ? 'border-[#a68f63]/40 text-[#8d7852] dark:text-[#c7b182]' : 'border-black/10 dark:border-white/10 text-black/30 dark:text-white/30'}`}><Icon size={17} strokeWidth={1.4} /></span><div><span className="text-[9px] tracking-[.22em] text-[#a68f63]">0{index}</span><h2 className="font-medium mt-1">{tool.name}</h2><p className="text-xs text-black/40 dark:text-white/40 mt-1.5 leading-relaxed">{tool.short}</p></div></div></button>;
+}
+
+function ToolShell({ eyebrow, title, description, children, results }: { eyebrow: string; title: string; description: string; children: ReactNode; results: ReactNode }) {
+  return <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(280px,.82fr)] min-h-[580px]"><div className="p-7 md:p-8 xl:p-11 border-b lg:border-b-0 lg:border-r border-black/[0.07] dark:border-white/[0.08]"><p className="meta-label">{eyebrow}</p><h2 className="text-3xl xl:text-4xl font-light mb-4" style={{ fontFamily: 'var(--font-serif)' }}>{title}</h2><p className="text-sm text-black/45 dark:text-white/45 leading-relaxed max-w-xl mb-9">{description}</p><div className="grid xl:grid-cols-2 gap-5">{children}</div></div><div className="p-7 md:p-8 xl:p-11 bg-white/25 dark:!bg-black/10 flex flex-col"><p className="meta-label">Resultado instantâneo</p>{results}</div></div>;
+}
+
+function Field({ label, value, onChange, suffix = 'R$' }: { label: string; value: number; onChange: (value: number) => void; suffix?: string }) {
+  return <label className="block"><span className="text-xs text-black/50 dark:text-white/50 block mb-2">{label}</span><span className="relative block"><input type="number" min="0" step="0.01" value={value || ''} onChange={event => onChange(Number(event.target.value))} className="w-full rounded-xl bg-white/70 dark:bg-white/[0.06] border border-black/10 dark:border-white/10 py-4 pl-4 pr-12 text-lg text-black dark:text-white outline-none focus:border-[#a68f63] transition-colors" /><span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-black/30 dark:text-white/30">{suffix}</span></span></label>;
+}
+function Metric({ label, value, hero = false }: { label: string; value: string; hero?: boolean }) { return <div className={`border-b border-black/[0.08] dark:border-white/[0.08] py-5 ${hero ? 'mb-2' : ''}`}><p className="text-[10px] uppercase tracking-[.18em] text-black/35 dark:text-white/35 mb-2">{label}</p><p className={`${hero ? 'text-4xl md:text-5xl' : 'text-2xl'} font-light`} style={{ fontFamily: 'var(--font-serif)' }}>{value}</p></div>; }
+function Advice({ children }: { children: ReactNode }) { return <div className="mt-auto pt-8"><div className="rounded-2xl border border-[#a68f63]/25 bg-[#a68f63]/[0.08] p-5"><p className="text-[10px] uppercase tracking-[.2em] text-[#8d7852] dark:text-[#c7b182] mb-2">Leitura estratégica</p><p className="text-sm text-black/60 dark:text-white/60 leading-relaxed">{children}</p></div><p className="text-[10px] text-black/30 dark:text-white/30 mt-4 leading-relaxed">Use como referência gerencial. Impostos, taxas e regras contábeis podem variar.</p></div>; }
+
+function BusinessSetup({ data, update, onReady }: { data: BusinessData; update: <K extends keyof BusinessData>(key: K, value: BusinessData[K]) => void; onReady: () => void }) {
+  const totalFixed = data.fixedCosts.reduce((sum, cost) => sum + cost.value, 0);
+  const updateCost = (id: string, patch: Partial<FixedCost>) => update('fixedCosts', data.fixedCosts.map(cost => cost.id === id ? { ...cost, ...patch } : cost));
+  const addCost = () => update('fixedCosts', [...data.fixedCosts, { id: crypto.randomUUID(), label: 'Outro custo fixo', value: 0 }]);
+  const removeCost = (id: string) => update('fixedCosts', data.fixedCosts.filter(cost => cost.id !== id));
+  return <div className="p-7 md:p-10 xl:p-12">
+    <div className="max-w-3xl"><p className="meta-label">Passo 01 — sua base</p><h2 className="text-4xl md:text-5xl font-light mb-4" style={{ fontFamily: 'var(--font-serif)' }}>Conte como o negócio funciona.</h2><p className="text-black/50 dark:text-white/50 leading-relaxed mb-10">Preencha uma vez. Esses números alimentam automaticamente as três ferramentas e ficam salvos neste dispositivo para as próximas consultas.</p></div>
+    <div className="grid xl:grid-cols-2 gap-6">
+      <SetupGroup number="01" title="Sua venda" help="Use um produto principal ou o valor médio das suas vendas."><div className="grid sm:grid-cols-2 gap-4"><Field label="Preço médio cobrado" value={data.price} onChange={value => update('price', value)} /><Field label="Custo direto por venda" value={data.productCost} onChange={value => update('productCost', value)} /></div><Field label="Impostos, taxas e comissões" value={data.fees} onChange={value => update('fees', value)} suffix="%" /><p className="text-xs text-black/35 dark:text-white/35 leading-relaxed">Custo direto é o que só existe quando há uma venda: matéria-prima, embalagem, produção ou profissional terceirizado.</p></SetupGroup>
+      <SetupGroup number="02" title="Estrutura mensal" help="São contas que chegam mesmo quando nenhuma venda acontece."><div className="space-y-3">{data.fixedCosts.map(cost => <div key={cost.id} className="grid grid-cols-[1fr_120px_34px] gap-2 items-center"><input aria-label="Nome do custo fixo" value={cost.label} onChange={event => updateCost(cost.id, { label: event.target.value })} className="bg-transparent border-b border-black/10 dark:border-white/10 py-3 text-sm outline-none focus:border-[#a68f63]" /><span className="relative"><input aria-label={`Valor de ${cost.label}`} type="number" min="0" value={cost.value || ''} onChange={event => updateCost(cost.id, { value: Number(event.target.value) })} className="w-full rounded-lg bg-white/60 dark:bg-white/[0.05] border border-black/10 dark:border-white/10 py-3 pl-3 pr-7 outline-none focus:border-[#a68f63]" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-black/30 dark:text-white/30">R$</span></span><button aria-label={`Excluir ${cost.label}`} onClick={() => removeCost(cost.id)} className="text-black/25 dark:text-white/25 hover:text-red-500 flex justify-center"><Trash2 size={15} /></button></div>)}</div><button onClick={addCost} className="flex items-center gap-2 text-xs text-[#8d7852] dark:text-[#c7b182] mt-3"><Plus size={14} /> Adicionar outro custo</button><div className="flex justify-between border-t border-black/10 dark:border-white/10 pt-4 mt-4"><span className="text-xs text-black/45 dark:text-white/45">Total fixo mensal</span><strong className="font-serif text-xl">{money.format(totalFixed)}</strong></div></SetupGroup>
+      <SetupGroup number="03" title="Seu objetivo" help="A meta que você gostaria de retirar como lucro após pagar tudo."><div className="grid sm:grid-cols-2 gap-4"><Field label="Lucro desejado no mês" value={data.profitGoal} onChange={value => update('profitGoal', value)} /><Field label="Dias de venda no mês" value={data.workDays} onChange={value => update('workDays', value)} suffix="dias" /></div></SetupGroup>
+      <div className="rounded-2xl bg-[#171716] dark:bg-white text-white dark:text-black p-7 flex flex-col justify-between min-h-48"><div><p className="text-[10px] uppercase tracking-[.2em] opacity-50 mb-3">Próximo passo</p><h3 className="text-2xl font-serif">Seus simuladores já estão conectados.</h3><p className="text-sm opacity-55 mt-3 leading-relaxed">Você pode voltar e alterar qualquer número. Os resultados serão recalculados na hora.</p></div><button onClick={onReady} className="self-start mt-6 rounded-full bg-white dark:bg-black text-black dark:text-white px-5 py-3 text-[10px] font-semibold uppercase tracking-[.16em]">Ver minha margem →</button></div>
+    </div>
+  </div>;
+}
+
+function SetupGroup({ number: step, title, help, children }: { number: string; title: string; help: string; children: ReactNode }) { return <section className="rounded-2xl border border-black/[0.08] dark:border-white/[0.09] bg-white/45 dark:bg-white/[0.035] p-6 md:p-7"><div className="flex gap-4 mb-6"><span className="text-[#a68f63] font-serif text-2xl">{step}</span><div><h3 className="font-serif text-2xl">{title}</h3><p className="text-xs text-black/40 dark:text-white/40 mt-1 leading-relaxed">{help}</p></div></div><div className="space-y-5">{children}</div></section>; }
+
+function MarginTool({ data }: { data: BusinessData }) {
+  const fixed = data.fixedCosts.reduce((sum, cost) => sum + cost.value, 0), variable = data.productCost + data.price * data.fees / 100, contribution = data.price - variable;
+  const breakEvenUnits = contribution > 0 ? Math.ceil(fixed / contribution) : 0, fixedShare = breakEvenUnits > 0 ? fixed / breakEvenUnits : 0, profit = contribution - fixedShare, margin = data.price > 0 ? profit / data.price * 100 : 0;
+  return <ToolShell eyebrow="Ferramenta 01" title="Margem & formação de preço" description="A margem de contribuição é o que sobra de cada venda para pagar a estrutura mensal. Depois que a estrutura é coberta, ela passa a formar lucro." results={<><Metric label="Sobra por venda para pagar a estrutura" value={money.format(contribution)} hero /><Metric label="Margem de contribuição" value={`${number.format(data.price > 0 ? contribution / data.price * 100 : 0)}%`} /><Metric label="Estrutura mensal informada" value={money.format(fixed)} /><Advice>{data.price <= 0 ? 'Comece preenchendo os dados do negócio. Assim conseguimos explicar a sua margem com números reais.' : contribution <= 0 ? 'O preço não cobre os custos diretos. Antes de vender mais, reveja preço, taxas ou custo do produto.' : `Com esta margem, aproximadamente ${number.format(breakEvenUnits)} vendas pagam toda a estrutura mensal. A margem líquida projetada por unidade de equilíbrio é ${number.format(margin)}%.`}</Advice></>}><Summary label="Preço médio" value={money.format(data.price)} /><Summary label="Custo direto" value={money.format(data.productCost)} /><Summary label="Taxas sobre a venda" value={`${number.format(data.fees)}%`} /><Summary label="Rateio no equilíbrio" value={money.format(fixedShare)} /></ToolShell>;
+}
+
+function GoalTool({ data }: { data: BusinessData }) {
+  const fixed = data.fixedCosts.reduce((sum, cost) => sum + cost.value, 0), variable = data.productCost + data.price * data.fees / 100, contribution = data.price - variable;
+  const units = contribution > 0 ? Math.ceil((fixed + data.profitGoal) / contribution) : 0, revenue = units * data.price, daily = data.workDays > 0 ? Math.ceil(units / data.workDays) : 0;
+  return <ToolShell eyebrow="Ferramenta 02" title="Meta de lucro" description="Primeiro pagamos todos os custos fixos. Depois, calculamos quantas vendas adicionais formam o lucro desejado." results={<><Metric label="Vendas necessárias no mês" value={`${number.format(units)} vendas`} hero /><Metric label="Faturamento necessário" value={money.format(revenue)} /><Metric label="Ritmo nos dias informados" value={`${number.format(daily)} por dia`} /><Advice>{contribution <= 0 ? 'Ainda não existe margem positiva para calcular a meta. Revise os dados da venda na sua base.' : data.profitGoal <= 0 ? 'Informe o lucro desejado em “Dados do negócio” para transformar este cálculo em uma meta real.' : `Cada venda coloca ${money.format(contribution)} na cobertura da estrutura e do lucro. Divida a meta em semanas para acompanhar cedo qualquer desvio.`}</Advice></>}><Summary label="Lucro desejado" value={money.format(data.profitGoal)} /><Summary label="Custos fixos" value={money.format(fixed)} /><Summary label="Contribuição por venda" value={money.format(contribution)} /><Summary label="Dias de venda" value={`${number.format(data.workDays)} dias`} /></ToolShell>;
+}
+
+function BreakEvenTool({ data }: { data: BusinessData }) {
+  const fixed = data.fixedCosts.reduce((sum, cost) => sum + cost.value, 0), variable = data.productCost + data.price * data.fees / 100, contribution = data.price - variable, rate = data.price > 0 ? contribution / data.price : 0;
+  const revenue = rate > 0 ? fixed / rate : 0, units = contribution > 0 ? Math.ceil(fixed / contribution) : 0, safety = revenue * 1.1;
+  return <ToolShell eyebrow="Ferramenta 03" title="Ponto de equilíbrio" description="É o momento em que as vendas pagam os custos diretos e todas as contas mensais. Antes dele há prejuízo; depois dele começa o lucro." results={<><Metric label="Faturamento de equilíbrio" value={money.format(safe(revenue))} hero /><Metric label="Quantidade mínima" value={`${number.format(units)} vendas`} /><Metric label="Meta com 10% de segurança" value={money.format(safe(safety))} /><Advice>{rate <= 0 ? 'Preencha a base ou corrija uma margem negativa para calcular o equilíbrio.' : `Ao alcançar ${number.format(units)} vendas, a operação paga os ${money.format(fixed)} de estrutura informados. A meta de segurança ajuda a absorver imprevistos.`}</Advice></>}><Summary label="Estrutura mensal" value={money.format(fixed)} /><Summary label="Margem por venda" value={money.format(contribution)} /><Summary label="Preço médio" value={money.format(data.price)} /><Summary label="Margem percentual" value={`${number.format(rate * 100)}%`} /></ToolShell>;
+}
+
+function Summary({ label, value }: { label: string; value: string }) { return <div className="rounded-xl border border-black/[0.08] dark:border-white/[0.08] p-4"><p className="text-[10px] uppercase tracking-[.15em] text-black/35 dark:text-white/35 mb-2">{label}</p><p className="font-serif text-xl">{value}</p></div>; }

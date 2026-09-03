@@ -8,22 +8,12 @@ import { EditorialText } from '../components/editorial/EditorialText';
 import { EditorialList } from '../components/editorial/EditorialList';
 import { EditorialTableOfContents } from '../components/editorial/EditorialTableOfContents';
 import { lunnaBlueprint } from '../data/lunna-blueprint';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 
 export function EditorialReader() {
   const navigate = useNavigate();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [readSections, setReadSections] = useState<Set<number>>(new Set([0]));
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  // Apply theme to document element for Tailwind
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
   
   const totalSections = Math.max(1, lunnaBlueprint.sections.length);
 
@@ -79,17 +69,7 @@ export function EditorialReader() {
           <span>&larr;</span> Voltar à Capa
         </button>
         <div className="flex items-center gap-4 md:gap-6">
-          <button 
-            onClick={() => setIsDarkMode(!isDarkMode)} 
-            className="w-10 h-10 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white"
-            title="Alternar Tema"
-          >
-            {isDarkMode ? (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            )}
-          </button>
+          <ThemeToggle />
           <button className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors flex items-center gap-2">
             <span className="text-xs tracking-widest uppercase hidden md:inline">Ouvir</span>
             <div className="w-10 h-10 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center bg-black/5 dark:bg-white/5">

@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();
-  if (loading) return <div className="min-h-screen bg-[#050505]" aria-label="Carregando" />;
+  if (loading) return <div className="min-h-screen bg-[#f3f1eb]" aria-label="Carregando" />;
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   return children;
 }

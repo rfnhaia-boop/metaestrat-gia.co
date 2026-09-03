@@ -7,11 +7,12 @@ import { IntelligenceCenter } from './pages/IntelligenceCenter';
 import { AppLayout } from './components/layout/AppLayout';
 import { AuthProvider } from './auth/AuthContext';
 import { ProtectedRoute } from './auth/ProtectedRoute';
+import { ThemeProvider } from './theme/ThemeContext';
 
 function App() {
   return (
     <Router>
-      <AuthProvider><Routes>
+      <ThemeProvider><AuthProvider><Routes>
         <Route path="/login" element={<Login />} />
         
         <Route path="/home" element={<ProtectedRoute><AppLayout><Home /></AppLayout></ProtectedRoute>} />
@@ -20,7 +21,7 @@ function App() {
         <Route path="/intelligence" element={<ProtectedRoute><AppLayout><IntelligenceCenter /></AppLayout></ProtectedRoute>} />
         
         <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes></AuthProvider>
+      </Routes></AuthProvider></ThemeProvider>
     </Router>
   );
 }

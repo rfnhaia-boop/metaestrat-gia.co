@@ -9,7 +9,7 @@ interface HolographicLightProps {
 }
 
 export function HolographicLight({ 
-  color = 'bg-nexus-cyan/20', 
+  color = 'bg-[#a68f63]/10', 
   size = 400, 
   className = '',
   delay = 0 
