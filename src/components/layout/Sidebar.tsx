@@ -34,7 +34,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="md:mt-auto flex flex-row md:flex-col gap-3 items-center"><ThemeToggle /><button onClick={signOut} aria-label="Sair" className="w-10 h-10 rounded-full bg-white/65 dark:bg-white/[0.07] border border-black/10 dark:border-white/15 flex items-center justify-center text-black/55 dark:text-white/60 text-xs font-serif hover:bg-white dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors">LA</button></div>
+      <div className="md:mt-auto flex flex-row md:flex-col gap-3 items-center"><ThemeToggle /><button onClick={signOut} aria-label="Sair" className="w-10 h-10 rounded-full bg-white/65 dark:bg-white/[0.07] border border-black/10 dark:border-white/15 flex items-center justify-center text-black/55 dark:text-white/60 hover:bg-white dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></button></div>
     </motion.aside>
   );
 }
