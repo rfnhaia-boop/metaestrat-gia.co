@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 
 export const codedSlideTitles = [
@@ -20,7 +21,7 @@ function Kicker({ children }: { children: ReactNode }) {
   return <p className={`${gold} text-[10px] md:text-[12px] tracking-[.22em] uppercase font-semibold mb-4`}>{children}</p>;
 }
 function Title({ children, compact = false }: { children: ReactNode; compact?: boolean }) {
-  return <h1 className={`${heading} ${compact ? 'text-[clamp(2.8rem,5vw,5.4rem)]' : 'text-[clamp(3.3rem,6.4vw,7.2rem)]'}`}>{children}</h1>;
+  return <h1 className={`${heading} ${compact ? 'text-[clamp(2.5rem,4.8vw,5rem)]' : 'text-[clamp(3rem,6vw,6.8rem)]'}`}>{children}</h1>;
 }
 function Rule() { return <div className="w-16 h-px bg-[#a47d27] my-5" />; }
 function Bullets({ items }: { items: readonly string[] }) {
@@ -30,7 +31,18 @@ function Numbered({ items }: { items: readonly string[] }) {
   return <ol className="space-y-2 text-[clamp(.7rem,.95vw,.96rem)]">{items.map((item, i) => <li key={item} className="grid grid-cols-[1.5rem_1fr] gap-2"><span className={gold}>{i + 1}.</span><span>{item}</span></li>)}</ol>;
 }
 function Frame({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <article className={`h-full w-full overflow-auto bg-[#f7f4ed] dark:bg-[#121210] text-[#171716] dark:text-[#f1ede5] px-[clamp(2rem,5.5vw,6.5rem)] pt-[clamp(2.5rem,6vh,5.5rem)] pb-24 ${className}`}>{children}</article>;
+  return (
+    <article className={`min-h-full w-full flex flex-col justify-center overflow-y-auto bg-[#f7f4ed] dark:bg-[#121210] text-[#171716] dark:text-[#f1ede5] px-[clamp(2rem,5.5vw,6.5rem)] py-12 md:py-16 pb-28 ${className}`}>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-7xl mx-auto my-auto"
+      >
+        {children}
+      </motion.div>
+    </article>
+  );
 }
 function MatrixCell({ number, title, items }: { number: string; title: string; items: string[] }) {
   return <div className="p-5 md:p-8 border border-[#9e8b68]/35 min-h-0 flex gap-5"><span className={`${heading} ${gold} text-4xl md:text-6xl`}>{number}</span><div className="border-l border-[#a3823c]/45 pl-5"><h3 className="text-xl md:text-2xl mb-3">{title}</h3><Bullets items={items} /></div></div>;
@@ -80,7 +92,52 @@ function Cover({ onNavigate }: { onNavigate: (index: number) => void }) {
 }
 
 function Letter() {
-  return <Frame><Kicker>02 | Carta Estratégica</Kicker><Title compact>Carta Estratégica</Title><div className="grid lg:grid-cols-[1fr_1.15fr_.75fr] gap-9 lg:gap-14 mt-12 text-[clamp(.95rem,1.25vw,1.28rem)] leading-[1.7]"><p>A Lunna Atelier chega ao mercado com um ponto de partida raro para uma marca iniciante: estética visual cuidada, produtos com potencial de desejo, linguagem sofisticada, uma fundadora com bom gosto e sinais iniciais de demanda.</p><div><p>Mas atração ainda não é posicionamento. Beleza ainda não é preferência. Sofisticação visual ainda não é confiança. E desejo, quando não encontra motivo claro para agir, vira salvamento de post, pergunta no WhatsApp, pedido de cupom ou adiamento da compra.</p><p className="mt-5">O desafio é transformar estética em significado, significado em confiança, confiança em compra e compra em relacionamento.</p></div><blockquote className="border-l border-[#aa8431] pl-8 editorial-serif italic text-3xl"><span className={`${gold} text-6xl leading-none`}>“</span><br/>Beleza ainda não é preferência.</blockquote></div></Frame>;
+  return (
+    <Frame>
+      <Kicker>02 | Carta Estratégica</Kicker>
+      <Title compact>Carta Estratégica</Title>
+      
+      <motion.div 
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.12 } }
+        }}
+        className="grid lg:grid-cols-[1fr_1.15fr_.85fr] gap-6 lg:gap-10 mt-8 md:mt-10 text-[clamp(.92rem,1.15vw,1.18rem)] leading-[1.72]"
+      >
+        <motion.div variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } } }}>
+          <div className="bg-black/[0.025] dark:bg-white/[0.03] backdrop-blur-xl border border-black/10 dark:border-white/10 p-6 md:p-8 rounded-2xl h-full shadow-[0_10px_30px_rgba(0,0,0,0.03)] dark:shadow-none hover:border-[#9b7625]/40 transition-all">
+            <p className="text-black/85 dark:text-white/85">
+              A Lunna Atelier chega ao mercado com um ponto de partida raro para uma marca iniciante: estética visual cuidada, produtos com potencial de desejo, linguagem sofisticada, uma fundadora com bom gosto e sinais iniciais de demanda.
+            </p>
+          </div>
+        </motion.div>
+
+        <motion.div variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } } }}>
+          <div className="bg-black/[0.025] dark:bg-white/[0.03] backdrop-blur-xl border border-black/10 dark:border-white/10 p-6 md:p-8 rounded-2xl h-full space-y-4 shadow-[0_10px_30px_rgba(0,0,0,0.03)] dark:shadow-none hover:border-[#9b7625]/40 transition-all">
+            <p className="text-black/85 dark:text-white/85">
+              Mas atração ainda não é posicionamento. Beleza ainda não é preferência. Sofisticação visual ainda não é confiança. E desejo, quando não encontra motivo claro para agir, vira salvamento de post, pergunta no WhatsApp, pedido de cupom ou adiamento da compra.
+            </p>
+            <div className="pt-3 border-t border-[#9b7625]/30">
+              <p className="font-medium text-[#9b7625] dark:text-[#c7b182]">
+                O desafio é transformar estética em significado, significado em confiança, confiança em compra e compra em relacionamento.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 240, damping: 22 } } }}>
+          <blockquote className="h-full flex flex-col justify-center border-l-2 border-[#9b7625] pl-6 md:pl-8 py-8 px-6 bg-gradient-to-r from-[#9b7625]/12 via-[#9b7625]/5 to-transparent rounded-r-2xl border-y border-r border-black/5 dark:border-white/10 shadow-sm">
+            <span className={`${gold} text-6xl leading-none font-serif select-none`}>“</span>
+            <p className="editorial-serif italic text-2xl lg:text-3xl text-black/95 dark:text-white/95 leading-tight mt-1">
+              Beleza ainda não é preferência.
+            </p>
+          </blockquote>
+        </motion.div>
+      </motion.div>
+    </Frame>
+  );
 }
 
 function Contents() {
