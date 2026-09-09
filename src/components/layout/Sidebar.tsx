@@ -4,37 +4,45 @@ import { useAuth } from '../../auth/AuthContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 
 const menuItems = [
-  { id: 'home', label: 'Visão Geral', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', path: '/home' },
-  { id: 'consulting', label: 'Estratégia', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', path: '/consulting' },
-  { id: 'intelligence', label: 'Ferramentas', icon: 'M13 10V3L4 14h7v7l9-11h-7z', path: '/intelligence' },
+  { label: 'Início', path: '/home', icon: 'M4 10.5 12 4l8 6.5V20H4v-9.5Z M9 20v-6h6v6' },
+  { label: 'Estratégia', path: '/consulting', icon: 'M6 3h9l3 3v15H6V3Z M9 8h8M10 12h4M10 16h4' },
+  { label: 'Ferramentas', path: '/intelligence', icon: 'M13 3 5 14h6v7l8-11h-6V3Z' },
 ];
 
 export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
-
   async function signOut() { await logout(); navigate('/login', { replace: true }); }
 
   return (
-    <motion.aside initial={{ x: -40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: .7 }} className="fixed bottom-0 left-0 right-0 h-20 md:h-auto md:top-0 md:w-20 flex flex-row md:flex-col items-center justify-between md:justify-start px-6 md:px-0 py-0 md:py-8 z-50 border-t md:border-t-0 md:border-r border-black/[0.08] dark:border-white/[0.08] bg-white/75 dark:bg-black/55 backdrop-blur-3xl transition-colors duration-500">
-      <button aria-label="Visão geral" onClick={() => navigate('/home')} className="hidden md:flex mb-auto flex-col items-center text-[#171716] dark:text-white">
-        <span className="font-serif text-2xl tracking-[-.08em]">m<span className="text-[#a68f63]">.</span></span>
-        <span className="w-4 h-px bg-black/20 mt-4" />
-      </button>
+    <>
+      <motion.aside initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="hidden md:flex fixed z-50 left-3 top-3 bottom-3 w-[68px] rounded-[24px] border border-white/50 dark:border-white/10 bg-white/55 dark:bg-black/45 backdrop-blur-3xl shadow-[0_18px_60px_rgba(37,31,20,.12),inset_0_1px_0_rgba(255,255,255,.9)] dark:shadow-[0_18px_60px_rgba(0,0,0,.38),inset_0_1px_0_rgba(255,255,255,.08)] flex-col items-center py-5">
+        <button onClick={() => navigate('/home')} aria-label="Meta Strategy — Início" className="editorial-brand w-10 h-10 rounded-full bg-[#11110f] text-white flex items-center justify-center text-xl shadow-lg">m<span className="text-[#c6a14e]">.</span></button>
+        <div className="w-5 h-px bg-black/15 dark:bg-white/15 my-6" />
+        <nav className="flex flex-col gap-3" aria-label="Navegação principal">
+          {menuItems.map(item => {
+            const active = location.pathname.startsWith(item.path);
+            return <button key={item.path} onClick={() => navigate(item.path)} aria-label={item.label} className="relative group w-11 h-11 rounded-2xl flex items-center justify-center">
+              {active && <motion.span layoutId="side-active" className="absolute inset-0 rounded-2xl bg-white/80 dark:bg-white/10 border border-white dark:border-white/10 shadow-[0_8px_22px_rgba(40,33,20,.1),inset_0_1px_0_white]" />}
+              <svg className={`relative z-10 w-[18px] h-[18px] ${active ? 'text-[#9a7625]' : 'text-black/38 dark:text-white/45 group-hover:text-black dark:group-hover:text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d={item.icon} strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span className="absolute left-14 px-3 py-2 rounded-xl bg-[#11110f]/90 backdrop-blur-xl text-white text-[10px] tracking-[.15em] uppercase opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all pointer-events-none whitespace-nowrap">{item.label}</span>
+            </button>;
+          })}
+        </nav>
+        <div className="mt-auto flex flex-col gap-3">
+          <ThemeToggle className="!w-11 !h-11 !rounded-2xl !bg-white/55 dark:!bg-white/[.07] !border-white dark:!border-white/10" />
+          <button onClick={signOut} aria-label="Sair" className="group relative w-11 h-11 rounded-2xl bg-[#11110f] text-[#d1ad59] flex items-center justify-center hover:scale-[1.04] transition-transform shadow-lg">
+            <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 6H5v12h5M14 8l4 4-4 4M18 12H9" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <span className="absolute left-14 px-3 py-2 rounded-xl bg-[#11110f]/90 text-white text-[10px] tracking-[.15em] uppercase opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Sair</span>
+          </button>
+        </div>
+      </motion.aside>
 
-      <nav aria-label="Navegação principal" className="flex flex-row md:flex-col gap-2 md:gap-5 w-auto md:w-full items-center">
-        {menuItems.map(item => {
-          const active = location.pathname.startsWith(item.path);
-          return <button key={item.id} aria-label={item.label} onClick={() => navigate(item.path)} className="relative flex items-center justify-center w-11 h-11 rounded-xl group">
-            {active ? <motion.span layoutId="activeTab" className="absolute inset-0 rounded-xl bg-white/75 dark:bg-white/10 border border-black/10 dark:border-white/10 shadow-[0_10px_30px_rgba(37,34,28,.08),inset_0_1px_0_white] dark:shadow-none" /> : null}
-            <svg className={`w-[18px] h-[18px] relative z-10 transition-colors ${active ? 'text-[#171716] dark:text-white' : 'text-black/30 dark:text-white/30 group-hover:text-black/65 dark:group-hover:text-white/70'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.4} d={item.icon} /></svg>
-            <span className="absolute left-14 px-3 py-2 bg-[#171716] text-white text-[10px] tracking-[.16em] uppercase rounded-lg opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all pointer-events-none whitespace-nowrap">{item.label}</span>
-          </button>;
-        })}
-      </nav>
-
-      <div className="md:mt-auto flex flex-row md:flex-col gap-3 items-center"><ThemeToggle /><button onClick={signOut} aria-label="Sair" className="w-10 h-10 rounded-full bg-white/65 dark:bg-white/[0.07] border border-black/10 dark:border-white/15 flex items-center justify-center text-black/55 dark:text-white/60 hover:bg-white dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></button></div>
-    </motion.aside>
+      <header className="md:hidden fixed z-50 top-3 left-3 right-3 h-16 rounded-[22px] bg-white/70 dark:bg-black/60 backdrop-blur-3xl border border-white/70 dark:border-white/10 shadow-lg flex items-center px-4">
+        <button onClick={() => navigate('/home')} className="editorial-brand text-xl">Meta Strategy</button>
+        <div className="ml-auto flex items-center gap-2"><ThemeToggle /><button onClick={signOut} className="h-10 px-4 rounded-full bg-[#11110f] text-[#d1ad59] text-xs uppercase tracking-wider">Sair</button></div>
+      </header>
+    </>
   );
 }
