@@ -47,7 +47,7 @@ export function Login() {
       if (!client) throw new Error('E-mail ou senha incorretos, ou acesso desativado.');
 
       localStorage.setItem('meta_session_demo', JSON.stringify({
-        id: Date.now(), email: client.email, name: client.name, role: 'client', clientId: client.id
+        id: client.id, email: client.email, name: client.name, role: 'client', clientId: client.id
       }));
       
       await refresh();
