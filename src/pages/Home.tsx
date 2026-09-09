@@ -1,8 +1,14 @@
 import { motion, type Variants } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import { findClientById } from '../data/clientAccess';
 
 export function Home() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const client = findClientById(user?.clientId);
+  const company = client?.company || user?.company || user?.name || 'Sua marca';
+  const blueprintReady = client?.projectStatus === 'publicado' || client?.id === 'lunna-atelier';
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -37,11 +43,11 @@ export function Home() {
         </div>
         
         <h1 className="text-6xl md:text-8xl font-light tracking-tighter text-[#171716] dark:text-white mb-8 leading-[0.9]" style={{ fontFamily: 'var(--font-serif)' }}>
-          Lunna<br/><span className="text-black/35 dark:text-white/35 font-sans tracking-tight">Atelier.</span>
+          {company}<span className="text-black/35 dark:text-white/35">.</span>
         </h1>
         
         <p className="text-black/55 dark:text-white/55 max-w-xl text-lg font-normal leading-relaxed">
-          Bem-vinda à sua central arquitetural. Aqui acompanhamos a construção do território de presença feminina possível, etapa por etapa.
+          {blueprintReady ? 'Bem-vinda à sua central estratégica. Seu diagnóstico, suas decisões e suas ferramentas vivem neste ambiente privado.' : 'Seu ambiente exclusivo já está ativo. As ferramentas estão liberadas enquanto sua estratégia personalizada está sendo preparada.'}
         </p>
       </motion.div>
 
@@ -66,7 +72,7 @@ export function Home() {
                 <span className="text-[#a68f63]/60 font-serif text-5xl md:text-6xl mt-1">01</span>
                 <div>
                   <h3 className="text-3xl md:text-4xl text-[#171716] dark:text-white mb-3" style={{ fontFamily: 'var(--font-serif)' }}>Blueprint Estratégico</h3>
-                  <p className="text-black/40 dark:text-white/40 text-xs md:text-sm tracking-[0.2em] uppercase">Documento Fundacional</p>
+                  <p className="text-black/40 dark:text-white/40 text-xs md:text-sm tracking-[0.2em] uppercase">{blueprintReady ? 'Documento Fundacional' : 'Em preparação'}</p>
                 </div>
               </div>
               

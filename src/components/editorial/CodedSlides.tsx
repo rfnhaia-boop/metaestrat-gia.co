@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const codedSlideTitles = [
   'Capa da metodologia NAVE', 'Carta Estratégica', 'Sumário do Documento',
@@ -12,6 +13,7 @@ export const codedSlideTitles = [
   'Primeiros 30 dias: fundação', 'Dias 31 a 60: ativação', 'Dias 61 a 90: validação e decisão',
   'Governança Estratégica', 'Riscos e Cenários', 'Próximos Passos',
   'Síntese Estratégica Final',
+  'Leitura Concluída',
 ] as const;
 
 const gold = 'text-[#9b7625]';
@@ -80,7 +82,8 @@ export function CodedSlide({ index, onNavigate }: { index: number; onNavigate: (
     case 24: return <Governance />;
     case 25: return <Risks />;
     case 26: return <NextSteps />;
-    default: return <Synthesis />;
+    case 27: return <Synthesis />;
+    default: return <Completion onNavigate={onNavigate} />;
   }
 }
 
@@ -268,3 +271,78 @@ function NextSteps() {
  return <Frame><Kicker>20 | Próximos passos recomendados</Kicker><Title compact>Começar pela fundação</Title><div className="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-[#9b7625]/30 border border-[#9b7625]/30 mt-10">{steps.map((s,i)=><div key={s} className="bg-[#f7f4ed] dark:bg-[#121210] p-6 min-h-40 group hover:bg-[#9b7625]/[.055] transition-colors"><span className={`${heading} ${gold} text-4xl`}>{String(i+1).padStart(2,'0')}</span><p className="mt-5 leading-relaxed text-sm">{s}</p></div>)}</div><p className="mt-8 editorial-serif text-2xl text-center">A ordem protege a estratégia: primeiro clareza, depois confiança, então ativação e escala.</p></Frame>;
 }
 function Synthesis() { return <Frame><Kicker>21 | Síntese estratégica final</Kicker><div className="border-t border-[#9b7625]/50 pt-8"><Title compact>Síntese Estratégica Final</Title></div><div className="grid lg:grid-cols-[.8fr_1.15fr_1.15fr] gap-12 mt-12"><blockquote className="editorial-serif italic text-3xl border-y border-[#9b7625]/50 py-7"><span className={`${gold} text-6xl`}>“</span><br/>A Lunna Atelier não precisa se tornar mais bonita para competir. Precisa se tornar mais significativa, mais confiável e menos comparável.</blockquote><div className="text-lg leading-[1.7]"><p>O mercado já entendeu que a marca tem estética. O próximo passo é fazer a cliente entender por que essa estética importa para a vida dela. A resposta deve ser presença.</p><p className="mt-7">Presença é o território que conecta a visão da fundadora, as dores da cliente, os produtos e a ambição de crescimento.</p></div><div className="text-lg leading-[1.7]"><p>Para ocupar esse território, a Lunna deve construir valor em camadas: provar o produto, organizar a oferta como jornada, consolidar a narrativa, criar relacionamento e crescer apenas quando a confiança permitir.</p><p className="mt-7">A mulher da Lunna quer parecer mais segura dentro da própria vida.</p></div></div></Frame>; }
+
+function Completion({ onNavigate }: { onNavigate: (index: number) => void }) {
+  const navigate = useNavigate();
+  return (
+    <Frame className="text-center">
+      <div className="max-w-3xl mx-auto flex flex-col items-center py-6">
+        {/* Animated Gold Completion Badge */}
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="relative mb-6"
+        >
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#9b7625]/15 border-2 border-[#9b7625] flex items-center justify-center text-[#9b7625] dark:text-[#c7b182] shadow-[0_0_50px_rgba(155,118,37,0.35)]">
+            <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="absolute inset-0 rounded-full bg-[#9b7625]/20 blur-xl animate-pulse pointer-events-none" />
+        </motion.div>
+
+        <Kicker>Status da Apresentação</Kicker>
+        
+        <h1 className="editorial-serif text-4xl md:text-6xl font-normal text-[#171716] dark:text-white mb-4 leading-tight">
+          Finalizado! Você leu tudo.
+        </h1>
+        
+        <p className="text-black/70 dark:text-white/70 text-base md:text-lg leading-relaxed max-w-xl mb-8 font-light">
+          Você concluiu a leitura integral do Blueprint Estratégico da <strong className="text-[#9b7625] font-normal">Lunna Atelier</strong>. Todo o posicionamento, tese de presença e o roteiro de execução 30/60/90 dias foram salvos.
+        </p>
+
+        {/* Stat Pills */}
+        <div className="grid grid-cols-3 gap-3 md:gap-4 w-full max-w-lg mb-10">
+          <div className="p-3 md:p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/10 dark:border-white/10 text-center">
+            <span className="block text-xl md:text-2xl font-serif text-[#9b7625]">100%</span>
+            <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-black/45 dark:text-white/45">Leitura Concluída</span>
+          </div>
+          <div className="p-3 md:p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/10 dark:border-white/10 text-center">
+            <span className="block text-xl md:text-2xl font-serif text-[#9b7625]">29/29</span>
+            <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-black/45 dark:text-white/45">Pranchas Vistas</span>
+          </div>
+          <div className="p-3 md:p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/10 dark:border-white/10 text-center">
+            <span className="block text-xl md:text-2xl font-serif text-[#9b7625]">Salvo</span>
+            <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-black/45 dark:text-white/45">Progresso Atual</span>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+          <button
+            onClick={() => navigate('/home')}
+            className="rounded-full bg-[#171716] dark:bg-white text-white dark:text-black px-7 py-3.5 text-[11px] tracking-[0.2em] uppercase font-semibold hover:opacity-90 transition-all shadow-lg flex items-center gap-3"
+          >
+            <span>Voltar ao Início</span>
+            <span>→</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/intelligence')}
+            className="rounded-full bg-black/5 dark:bg-white/10 text-black dark:text-white border border-black/15 dark:border-white/15 px-6 py-3.5 text-[11px] tracking-[0.2em] uppercase font-semibold hover:bg-black/10 dark:hover:bg-white/20 transition-all"
+          >
+            Acessar Ferramentas
+          </button>
+
+          <button
+            onClick={() => onNavigate(0)}
+            className="rounded-full bg-transparent text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white px-5 py-3.5 text-[11px] tracking-[0.16em] uppercase transition-colors"
+          >
+            Revisar do Início ↺
+          </button>
+        </div>
+      </div>
+    </Frame>
+  );
+}

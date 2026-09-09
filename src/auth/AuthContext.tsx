@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type User = { id: number; email: string; name?: string; phone?: string | null; role?: 'admin' | 'client'; clientId?: string };
+export type User = { id: number | string; email: string; name?: string; company?: string; phone?: string | null; role?: 'admin' | 'client'; clientId?: string };
 type AuthContextValue = { user: User | null; loading: boolean; refresh: () => Promise<void>; logout: () => Promise<void> };
 const AuthContext = createContext<AuthContextValue | null>(null);
 

@@ -2,23 +2,24 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, Check, Copy, FileText, FolderOpen, Plus, Search, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { CLIENTS_STORAGE_KEY, createAccessKey } from '../data/clientAccess';
 
 type Asset={id:string;name:string;size:string;addedAt:string};
 type Status='rascunho'|'em_producao'|'publicado';
 type Client={id:string;name:string;company:string;email:string;password:string;active:boolean;assets:Asset[];progress:number;lastSlide:number;totalSlides:number;sectionsPublished:number;totalSections:number;projectStatus:Status;lastAccess:string};
-const key='meta_admin_clients';
-const lunna:Client={id:'lunna-atelier',name:'Lunna Atelier',company:'Lunna Atelier',email:'lunna@cliente.com',password:'MS-LUNNA26',active:true,assets:[],progress:43,lastSlide:9,totalSlides:21,sectionsPublished:21,totalSections:21,projectStatus:'publicado',lastAccess:'Hoje, 10:42'};
-function load():Client[]{try{const saved=JSON.parse(localStorage.getItem(key)||'[]') as Partial<Client>[];return (saved.length?saved:[lunna]).map((c,i)=>({...lunna,progress:0,lastSlide:0,sectionsPublished:0,projectStatus:'rascunho',lastAccess:'Ainda não acessou',...c,id:c.id||`client-${i}`}));}catch{return[lunna]}}
+const key=CLIENTS_STORAGE_KEY;
+const lunna:Client={id:'lunna-atelier',name:'Lunna Atelier',company:'Lunna Atelier',email:'lunna@cliente.com',password:'PRESENCA-LUNNA',active:true,assets:[],progress:43,lastSlide:9,totalSlides:21,sectionsPublished:21,totalSections:21,projectStatus:'publicado',lastAccess:'Hoje, 10:42'};
+function load():Client[]{try{const saved=JSON.parse(localStorage.getItem(key)||'[]') as Partial<Client>[];return (saved.length?saved:[lunna]).map((c,i)=>({...lunna,progress:0,lastSlide:0,sectionsPublished:0,projectStatus:'rascunho',lastAccess:'Ainda não acessou',...c,password:c.id==='lunna-atelier'?lunna.password:c.password||lunna.password,id:c.id||`client-${i}`}));}catch{return[lunna]}}
 function live(c:Client){try{const p=JSON.parse(localStorage.getItem(`meta_client_progress_${c.id}`)||'null');return p?{...c,...p}:c}catch{return c}}
 
 export function Admin(){
  const[clients,setClients]=useState<Client[]>(load);const[selectedId,setSelectedId]=useState<string|null>(null);const[creating,setCreating]=useState(false);const[query,setQuery]=useState('');const[form,setForm]=useState({name:'',company:'',email:''});const[copied,setCopied]=useState(false);const fileRef=useRef<HTMLInputElement>(null);const navigate=useNavigate();
  const selected=useMemo(()=>clients.find(c=>c.id===selectedId)||null,[clients,selectedId]);const filtered=clients.filter(c=>`${c.company} ${c.name}`.toLowerCase().includes(query.toLowerCase()));const average=clients.length?Math.round(clients.reduce((s,c)=>s+live(c).progress,0)/clients.length):0;
  useEffect(()=>localStorage.setItem(key,JSON.stringify(clients)),[clients]);
- function create(e:React.FormEvent){e.preventDefault();const id=crypto.randomUUID();const c:Client={id,...form,password:`MS-${Math.random().toString(36).slice(2,8).toUpperCase()}`,active:true,assets:[],progress:0,lastSlide:0,totalSlides:21,sectionsPublished:0,totalSections:21,projectStatus:'rascunho',lastAccess:'Ainda não acessou'};setClients(x=>[c,...x]);setSelectedId(id);setCreating(false);setForm({name:'',company:'',email:''})}
+ function create(e:React.FormEvent){e.preventDefault();const id=crypto.randomUUID();const c:Client={id,...form,password:createAccessKey(form.company),active:true,assets:[],progress:0,lastSlide:0,totalSlides:21,sectionsPublished:0,totalSections:21,projectStatus:'rascunho',lastAccess:'Ainda não acessou'};setClients(x=>[c,...x]);setSelectedId(id);setCreating(false);setForm({name:'',company:'',email:''})}
  function update(change:Partial<Client>){setClients(x=>x.map(c=>c.id===selectedId?{...c,...change}:c))}
  function addFiles(files:FileList|null){if(!selected||!files?.length)return;const a=Array.from(files).map(f=>({id:crypto.randomUUID(),name:f.name,size:f.size>1e6?`${(f.size/1e6).toFixed(1)} MB`:`${Math.ceil(f.size/1000)} KB`,addedAt:new Date().toLocaleDateString('pt-BR')}));update({assets:[...selected.assets,...a],projectStatus:'em_producao'});if(fileRef.current)fileRef.current.value=''}
- async function copy(){if(!selected)return;await navigator.clipboard.writeText(`Acesso Meta Strategy\nE-mail: ${selected.email}\nSenha: ${selected.password}`);setCopied(true);setTimeout(()=>setCopied(false),1600)}
+ async function copy(){if(!selected)return;await navigator.clipboard.writeText(`Olá, ${selected.name}!\n\nSeu ambiente estratégico da ${selected.company} está pronto. Este é um espaço privado, criado especialmente para você.\n\nAcesse: ${window.location.origin}/login\nSua palavra de acesso: ${selected.password}\n\nGuarde esta palavra — ela leva você diretamente à sua plataforma.`);setCopied(true);setTimeout(()=>setCopied(false),1600)}
  if(selected)return <Detail client={live(selected)} back={()=>setSelectedId(null)} update={update} fileRef={fileRef} addFiles={addFiles} copy={copy} copied={copied} open={()=>navigate('/consulting')}/>;
  return <div className="min-h-screen pt-24 md:pt-14 px-5 md:px-10 lg:px-16 pb-16 max-w-[1480px] mx-auto">
   <motion.header initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 mb-12"><div><Eyebrow>Visão do consultor</Eyebrow><h1 className="editorial-serif text-5xl md:text-7xl tracking-[-.045em] leading-[.92]">Carteira de clientes</h1><p className="mt-5 text-black/48 dark:text-white/48 max-w-2xl leading-relaxed">Acompanhe cada diagnóstico, veja até onde o cliente leu e publique uma plataforma individual para cada negócio.</p></div><button onClick={()=>setCreating(true)} className="action"><Plus size={15}/> Novo cliente</button></motion.header>

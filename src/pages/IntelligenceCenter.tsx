@@ -3,6 +3,7 @@ import { ArrowLeft, Building2, Calculator, Moon, Package, Plus, Scale, Sun, Targ
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../theme/ThemeContext';
+import { useAuth } from '../auth/AuthContext';
 
 type Tool = 'setup' | 'margin' | 'goal' | 'break-even' | 'valuation';
 type FixedCost = { id: string; label: string; value: number };
@@ -23,11 +24,13 @@ const safe = (value: number) => Number.isFinite(value) && value > 0 ? value : 0;
 const contribution = (product: Product) => product.price - product.productCost - product.price * product.fees / 100;
 
 export function IntelligenceCenter() {
+  const { user } = useAuth();
+  const storageKey = `meta_business_data_${user?.clientId || 'guest'}`;
   const [active, setActive] = useState<Tool>('setup');
-  const [data, setData] = useState<BusinessData>(() => { try { const saved = JSON.parse(localStorage.getItem('meta_business_data') || 'null'); if (!saved) return initialData; return { ...initialData, ...saved, products: saved.products?.length ? saved.products : [{ ...newProduct(), price: saved.price || 0, productCost: saved.productCost || 0, fees: saved.fees || 0 }] }; } catch { return initialData; } });
+  const [data, setData] = useState<BusinessData>(() => { try { const saved = JSON.parse(localStorage.getItem(storageKey) || 'null'); if (!saved) return initialData; return { ...initialData, ...saved, products: saved.products?.length ? saved.products : [{ ...newProduct(), price: saved.price || 0, productCost: saved.productCost || 0, fees: saved.fees || 0 }] }; } catch { return initialData; } });
   const [productId, setProductId] = useState(() => data.products[0]?.id || '');
   const navigate = useNavigate();
-  useEffect(() => { localStorage.setItem('meta_business_data', JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem(storageKey, JSON.stringify(data)); }, [data, storageKey]);
   const update = <K extends keyof BusinessData>(key: K, value: BusinessData[K]) => setData(current => ({ ...current, [key]: value }));
   const selectedProduct = data.products.find(product => product.id === productId) || data.products[0];
   const filled = [data.profitGoal, ...data.fixedCosts.map(cost => cost.value), ...data.products.flatMap(product => [product.price, product.productCost])].filter(value => value > 0).length;
