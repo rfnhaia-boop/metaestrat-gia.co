@@ -1,0 +1,14 @@
+# Robots.txt for Meta Strategy
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /home
+Allow: /consulting
+Allow: /reader
+Allow: /intelligence
+
+Disallow: /admin
+Disallow: /admin/login
+Disallow: /api/
+
+Sitemap: https://metaestrat-gia.vercel.app/sitemap.xml

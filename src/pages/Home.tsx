@@ -2,6 +2,7 @@ import { motion, type Variants } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { findClientById } from '../data/clientAccess';
+import { SEO } from '../components/ui/SEO';
 
 export function Home() {
   const navigate = useNavigate();
